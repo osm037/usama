@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Safeena — An Eternal Valentine</title>
+    <!--
+      Ultra-cinematic, deeply poetic Valentine’s Day proposal for Safeena
+      Pure HTML, CSS, JavaScript — single self-contained file, no frameworks
+      Carefully commented for clarity, responsiveness, and emotional pacing
+    -->
+    <style>
+      /* ------------------------------- RESET ------------------------------- */
+      * { box-sizing: border-box; }
+      html, body {
+        margin: 0; padding: 0; height: 100%; width: 100%;
+        background: #000; color: #fff; font-family: "Cormorant Garamond", Georgia, serif;
+      }
+      :root {
+        /* Color palette tuned for romantic cinema */
+        --gold: #ffd56b;
+        --soft-gold: #f7e5a6;
+        --deep-red: #40000f;
+        --rose: #b0002a;
+        --black: #000000;
+        --card-bg: rgba(255, 255, 255, 0.08);
+        --card-blur: saturate(140%) blur(12px);
+        --glow: 0 0 30px rgba(255, 213, 107, 0.4);
+        --text-xl: clamp(1.2rem, 3vw, 1.6rem);
+        --text-2xl: clamp(1.5rem, 4vw, 2.2rem);
+        --text-3xl: clamp(2.2rem, 6vw, 3.4rem);
+        --text-4xl: clamp(2.8rem, 8vw, 4.4rem);
+      }
+
+      /* ------------------------------ LAYOUT ------------------------------ */
+      .scene {
+        position: fixed; inset: 0; display: grid; place-items: center;
+        opacity: 0; pointer-events: none; transition: opacity 1.8s ease;
+        overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 8vh 5vw;
+      }
+      .scene.active { opacity: 1; pointer-events: auto; }
+      .layer {
+        position: absolute; inset: 0; width: 100%; height: 100%;
+      }
+
+      /* ------------------------ BACKGROUND: NEBULA ------------------------ */
+      .nebula {
+        background:
+          radial-gradient(1200px 800px at 10% 10%, rgba(255, 100, 100, 0.15), transparent 60%),
+          radial-gradient(900px 700px at 90% 20%, rgba(255, 200, 80, 0.14), transparent 60%),
+          radial-gradient(1000px 900px at 50% 80%, rgba(80, 0, 0, 0.35), transparent 65%),
+          radial-gradient(600px 500px at 20% 70%, rgba(200, 0, 60, 0.2), transparent 65%),
+          linear-gradient(180deg, #000 0%, #0a0210 50%, #000 100%);
+        filter: blur(2px) saturate(120%);
+        animation: nebulaDrift 60s linear infinite;
+      }
+      @keyframes nebulaDrift {
+        0%   { transform: translate3d(0,0,0) scale(1); }
+        50%  { transform: translate3d(-3%,2%,0) scale(1.03); }
+        100% { transform: translate3d(0,0,0) scale(1); }
+      }
+
+      /* --------------------------- CANVAS: STARS -------------------------- */
+      canvas#stars {
+        position: absolute; inset: 0; width: 100%; height: 100%;
+      }
+
+      /* ---------------------------- SHIMMER TEXT -------------------------- */
+      .shimmer {
+        background: linear-gradient(90deg, rgba(255,255,255,0.05), var(--gold), rgba(255,255,255,0.05));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        animation: shimmerMove 4s linear infinite;
+        text-shadow: 0 0 15px rgba(255, 213, 107, 0.15);
+      }
+      @keyframes shimmerMove {
+        0% { background-position: -200% 0; }
+        100% { background-position: 200% 0; }
+      }
+
+      /* ------------------------------ TYPEWRITER --------------------------- */
+      .type {
+        font-size: var(--text-2xl);
+        opacity: 0; transform: translateY(8px);
+        transition: opacity 1.6s ease, transform 1.6s ease;
+      }
+      .type.show { opacity: 1; transform: translateY(0); }
+
+      /* ------------------------------ BUTTONS ------------------------------ */
+      .btn {
+        display: inline-flex; align-items: center; justify-content: center;
+        padding: 0.9rem 1.4rem; border-radius: 999px; border: 1px solid rgba(255,255,255,0.25);
+        color: #fff; font-size: clamp(1rem, 3vw, 1.2rem);
+        background: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+        backdrop-filter: blur(8px);
+        box-shadow: inset 0 0 10px rgba(255,255,255,0.06), var(--glow);
+        cursor: pointer; transition: transform 0.2s ease, box-shadow 0.4s ease;
+      }
+      .btn:hover { transform: translateY(-2px); box-shadow: var(--glow), 0 0 60px rgba(255,255,255,0.08); }
+
+      /* --------------------------- GLASSMORPH CARD ------------------------- */
+      .card {
+        width: min(880px, 92vw);
+        padding: clamp(1.2rem, 3vw, 2rem);
+        border-radius: 24px;
+        background: var(--card-bg);
+        backdrop-filter: var(--card-blur);
+        border: 1px solid rgba(255,255,255,0.12);
+        box-shadow: 0 20px 60px rgba(0,0,0,0.45), 0 0 60px rgba(255,255,255,0.05);
+      }
+      .card h1 {
+        font-size: var(--text-3xl);
+        margin: 0 0 0.6rem 0;
+        color: var(--soft-gold);
+        text-shadow: 0 0 25px rgba(247,229,166,0.2);
+      }
+      .card p {
+        font-size: var(--text-xl); line-height: 1.5; margin: 0.5rem 0;
+      }
+      .urdu {
+        font-family: "Noto Nastaliq Urdu", "Scheherazade New", "Noto Naskh Arabic", Georgia, serif;
+        font-size: var(--text-xl);
+      }
+
+      /* ---------------------------- LOCK OVERLAY --------------------------- */
+      .overlay {
+        position: fixed; inset: 0; display: grid; place-items: center;
+        background: rgba(0,0,0,0.7);
+        opacity: 0; pointer-events: none; transition: opacity 1s ease;
+        padding: 6vh 4vw; overflow-y: auto; -webkit-overflow-scrolling: touch;
+      }
+      .overlay.show { opacity: 1; pointer-events: auto; }
+      .lock {
+        width: 160px; height: 200px; position: relative; margin-bottom: 1rem;
+        filter: drop-shadow(0 10px 40px rgba(255,255,255,0.15));
+      }
+      .lock .body {
+        position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+        width: 140px; height: 130px; border-radius: 22px;
+        background: linear-gradient(180deg, #1a1a1a, #0b0b0b);
+        border: 2px solid rgba(255,255,255,0.2);
+      }
+      .lock .shackle {
+        position: absolute; top: 0; left: 50%; transform-origin: left bottom; transform: translateX(-50%) rotate(0deg);
+        width: 110px; height: 120px; border: 10px solid #ddd; border-bottom: none; border-radius: 55px 55px 0 0;
+        transition: transform 0.8s ease;
+      }
+      .lock.open .shackle { transform: translateX(-50%) rotate(-40deg); }
+
+      .overlay .prompt { text-align: center; max-width: 700px; padding: 1rem; }
+      .overlay .prompt h2 { font-size: var(--text-2xl); margin: 0 0 0.6rem 0; color: var(--soft-gold); }
+      .overlay .prompt p { font-size: clamp(1rem, 3vw, 1.2rem); opacity: 0.9; }
+      .overlay input {
+        margin-top: 0.9rem; width: min(480px, 80vw); padding: 0.8rem 1rem;
+        border-radius: 999px; border: 1px solid rgba(255,255,255,0.25);
+        background: rgba(255,255,255,0.08); color: #fff; outline: none;
+        font-size: 1rem;
+      }
+
+      /* ----------------------------- FINAL SCENE --------------------------- */
+      .final-bg {
+        background:
+          radial-gradient(900px 600px at 50% 50%, rgba(255, 213, 107, 0.1), transparent 60%),
+          linear-gradient(180deg, #0a0002, #30000a 50%, #100004);
+        transition: opacity 1.8s ease;
+      }
+
+      /* -------------------------- PETALS & HEARTS -------------------------- */
+      .fall-container, .float-container { position: fixed; inset: 0; pointer-events: none; }
+      .petal, .fheart {
+        position: absolute; width: 18px; height: 18px; opacity: 0.85;
+        background: radial-gradient(60% 60% at 50% 50%, #ff4d6d, #a0002a);
+        clip-path: path("M9,0 C12,0 18,6 14,12 C12,15 6,18 3,14 C-2,8 6,0 9,0 Z");
+        filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+      }
+      .fheart {
+        background: radial-gradient(60% 60% at 50% 50%, #ff91a4, #ff1c58);
+        clip-path: path("M9,3 C12,-3 18,3 15,8 C12,12 9,15 9,15 C9,15 6,12 3,8 C0,3 6,-3 9,3 Z");
+      }
+      @keyframes fall {
+        0% { transform: translateY(-10%) rotate(0deg); opacity: 0; }
+        10% { opacity: 0.9; }
+        100% { transform: translateY(110%) rotate(360deg); opacity: 0; }
+      }
+      @keyframes float {
+        0% { transform: translateY(0) translateX(0); opacity: 0.9; }
+        50% { transform: translateY(-10px) translateX(8px); }
+        100% { transform: translateY(0) translateX(0); opacity: 0.6; }
+      }
+
+      /* ------------------------------- HEADLINE ---------------------------- */
+      .headline { font-size: var(--text-4xl); text-align: center; margin: 0.4rem 0; }
+
+      /* ------------------------------ UTILITIES ---------------------------- */
+      .center { display: grid; place-items: center; text-align: center; }
+      .stack { display: grid; gap: 0.9rem; }
+      .stack-lg { display: grid; gap: 1.2rem; }
+      .fade { opacity: 0; transition: opacity 1.4s ease; }
+      .fade.show { opacity: 1; }
+
+      /* -------------------------- RESPONSIVE: SMALL -------------------------- */
+      @media (max-width: 480px), (max-height: 700px) {
+        .scene { place-items: start; padding: 6vh 4vw; }
+        .stack { gap: 0.6rem; }
+        .stack-lg { gap: 0.8rem; }
+        .card { width: 96vw; padding: 1rem; border-radius: 18px; }
+        .headline { font-size: clamp(1.8rem, 9vw, 2.6rem); }
+        .type { font-size: clamp(1rem, 4.8vw, 1.2rem); }
+        .card p, .urdu { font-size: clamp(1rem, 4.6vw, 1.15rem); line-height: 1.45; }
+        .btn { padding: 0.8rem 1.1rem; font-size: clamp(0.95rem, 4.8vw, 1.1rem); }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ---------------------------- BACKGROUND LAYERS ---------------------------- -->
+    <div class="layer nebula" aria-hidden="true"></div>
+    <canvas id="stars"></canvas>
+
+    <!-- ------------------------------- SCENE 1 ---------------------------------- -->
+    <section id="scene1" class="scene active">
+      <div class="center stack">
+        <div id="line1" class="type">In a universe full of endless stars…</div>
+        <div id="line2" class="type">My heart searched…</div>
+        <div id="line3" class="type">And then it found its home.</div>
+        <div id="name" class="headline shimmer fade">✨ Safeena ✨</div>
+        <div id="urdu1" class="type urdu">میری تقدیر کی سب سے خوبصورت تحریر — سیفینہ ❤️</div>
+        <button id="enter" class="btn fade">Enter My World 💌</button>
+      </div>
+    </section>
+
+    <!-- ------------------------------- SCENE 2 ---------------------------------- -->
+    <section id="scene2" class="scene">
+      <div class="card stack-lg">
+        <h1>To The Love of My Life, <span class="shimmer">Safeena</span> ❤️</h1>
+        <p class="fade">Safeena…</p>
+        <p class="fade">You are not just a chapter in my life.</p>
+        <p class="fade">You are the poetry between my breaths.</p>
+        <p class="fade">You are the silence that speaks comfort,</p>
+        <p class="fade">the chaos that feels like peace,</p>
+        <p class="fade">the dream I never want to wake up from.</p>
+        <p class="fade">When I look at you,</p>
+        <p class="fade">I don’t see just beauty…</p>
+        <p class="fade">I see my future.</p>
+        <p class="fade">If love had a face,</p>
+        <p class="fade">it would smile like you. 💖</p>
+        <hr style="border: none; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); margin: 0.6rem 0;">
+        <p class="fade urdu">سیفینہ…<br/>تم وہ احساس ہو<br/>جو لفظوں میں سمٹتا نہیں۔<br/>تم وہ روشنی ہو<br/>جو اندھیروں سے ڈرتی نہیں۔<br/>تم وہ دعا ہو<br/>جو مانگنے سے پہلے قبول ہو گئی۔ 💕</p>
+        <p class="fade sparkle urdu">اگر زندگی ایک سفر ہے،<br/>تو میں ہر راستہ تمہارے ساتھ چلنا چاہتا ہوں۔<br/>اگر محبت ایک عبادت ہے،<br/>تو سیفینہ…<br/>تم میری سب سے مقدس عبادت ہو۔ ❤️</p>
+        <div class="center">
+          <button id="secretBtn" class="btn">There Is A Secret Inside My Heart… 🔐</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- --------------------------- SECRET OVERLAY ------------------------------- -->
+    <div id="secretOverlay" class="overlay">
+      <div class="center stack">
+        <div class="lock" id="lock">
+          <div class="shackle"></div>
+          <div class="body"></div>
+        </div>
+        <div class="prompt">
+          <h2>Only the one who owns my heart can unlock this…</h2>
+          <p>Type the name that lives in my heartbeat 💓</p>
+          <input id="secretInput" placeholder="Type here…" autocomplete="off" />
+        </div>
+      </div>
+    </div>
+
+    <!-- ------------------------------- SCENE 3 ---------------------------------- -->
+    <section id="scene3" class="scene">
+      <div class="center stack">
+        <div class="card stack-lg">
+          <p class="fade">Safeena…</p>
+          <p class="fade">Even if the stars fade,</p>
+          <p class="fade">even if time forgets our story,</p>
+          <p class="fade">my heart will still whisper your name.</p>
+          <p class="fade">You are my once in a lifetime.</p>
+          <p class="fade">My forever.</p>
+          <p class="fade">My always. 🌹</p>
+          <p class="fade urdu">میں تم سے آج نہیں…<br/>ہمیشہ سے محبت کرتا ہوں،<br/>اور ہمیشہ کرتا رہوں گا۔ 💞</p>
+          <div class="center">
+            <button id="finalBtn" class="btn">Continue 💫</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ------------------------------- SCENE 4 ---------------------------------- -->
+    <section id="scene4" class="scene">
+      <div class="layer final-bg" aria-hidden="true"></div>
+      <div class="center stack">
+        <div class="type" id="f1">Safeena…</div>
+        <div class="type" id="f2">If love is destiny…</div>
+        <div class="type" id="f3">Then you are mine written by God.</div>
+        <div class="headline shimmer fade" id="proposal">Will you stay with me for eternity? 💍</div>
+        <div class="type urdu" id="proposalUrdu">کیا تم میری ہمیشہ بنو گی؟ ❤️</div>
+        <div class="center" style="gap:0.6rem; display:flex; flex-wrap:wrap; justify-content:center;">
+          <button class="btn" id="yes">💖 Yes, Forever</button>
+          <button class="btn" id="only">❤️ Only Yours</button>
+        </div>
+        <div class="headline fade" id="finalMsg">My heart found its home in you, Safeena.</div>
+        <div class="type urdu" id="finalUrdu">میری دنیا تم ہو،<br/>میری دعا تم ہو،<br/>میرا کل بھی تم ہو — سیفینہ ❤️</div>
+      </div>
+      <div class="fall-container" id="petals"></div>
+      <div class="float-container" id="floatHearts"></div>
+    </section>
+
+    <!-- ------------------------------- SCRIPT ----------------------------------- -->
+    <script>
+      /* ==========================================================================
+         AUDIO: Soft piano instrumental + gentle heartbeat using WebAudio API
+         ========================================================================== */
+      const AudioEngine = (() => {
+        let ctx, master, playing = false;
+        const start = () => {
+          if (playing) return;
+          ctx = new (window.AudioContext || window.webkitAudioContext)();
+          master = ctx.createGain(); master.gain.value = 0.15; master.connect(ctx.destination);
+          playing = true;
+          pianoLoop(); heartbeatLoop();
+        };
+        const ramp = (node, to, t = 0.6) => node.gain.linearRampToValueAtTime(to, ctx.currentTime + t);
+        function pianoVoice(freq, dur, timeOffset, gainMul = 0.15) {
+          const o = ctx.createOscillator();
+          const g = ctx.createGain(); g.gain.value = 0;
+          o.type = "triangle"; o.frequency.value = freq;
+          const f = ctx.createBiquadFilter(); f.type = "lowpass"; f.frequency.value = 2000;
+          o.connect(f); f.connect(g); g.connect(master);
+          const t = ctx.currentTime + timeOffset;
+          o.start(t);
+          g.gain.cancelScheduledValues(t);
+          g.gain.setValueAtTime(0, t);
+          g.gain.linearRampToValueAtTime(gainMul, t + 0.2);
+          g.gain.linearRampToValueAtTime(0.0001, t + dur);
+          o.stop(t + dur + 0.02);
+        }
+        function pianoLoop() {
+          // Peaceful arpeggio progression
+          const base = [220, 277, 330, 440]; // A minor gentle hues
+          const now = ctx.currentTime;
+          for (let i = 0; i < 8; i++) {
+            const chord = (i % 2 === 0) ? base : [196, 247, 294, 392]; // G variation
+            chord.forEach((f, j) => pianoVoice(f, 1.8, i * 1.4 + j * 0.15, 0.10));
+          }
+          setTimeout(() => { if (playing) pianoLoop(); }, 1400 * 8 / 60 * 1000);
+        }
+        function heartbeatLoop() {
+          const kick = () => {
+            const o = ctx.createOscillator(); o.type = "sine"; o.frequency.setValueAtTime(60, ctx.currentTime);
+            const g = ctx.createGain(); g.gain.value = 0; o.connect(g); g.connect(master);
+            const t = ctx.currentTime;
+            g.gain.setValueAtTime(0, t);
+            g.gain.linearRampToValueAtTime(0.25, t + 0.02);
+            g.gain.exponentialRampToValueAtTime(0.0001, t + 0.25);
+            o.frequency.exponentialRampToValueAtTime(30, t + 0.25);
+            o.start(t); o.stop(t + 0.3);
+          };
+          const beat = () => { kick(); setTimeout(kick, 140); };
+          const loop = () => { beat(); setTimeout(() => { if (playing) loop(); }, 1200); };
+          loop();
+        }
+        const swell = () => { if (master) ramp(master, 0.28, 2.0); };
+        return { start, swell };
+      })();
+
+      /* ==========================================================================
+         CANVAS STARFIELD with occasional shooting star & particle heart gather
+         ========================================================================== */
+      const canvas = document.getElementById("stars");
+      const ctx2d = canvas.getContext("2d");
+      const dpi = window.devicePixelRatio || 1;
+      let W = 0, H = 0;
+      const stars = []; const particles = [];
+      function resize() {
+        W = canvas.width = Math.floor(innerWidth * dpi);
+        H = canvas.height = Math.floor(innerHeight * dpi);
+      }
+      window.addEventListener("resize", resize); resize();
+      function rand(a,b){ return a + Math.random()*(b-a); }
+      for (let i=0;i<400;i++) stars.push({ x: rand(0,W), y: rand(0,H), r: rand(0.6,2.2), tw: rand(0,2*Math.PI) });
+      let shooting = null, shootTimer = 0;
+      function spawnShootingStar() {
+        const y = rand(H*0.1, H*0.4), dir = rand(-0.4,0.2);
+        shooting = { x: rand(0,W*0.3), y, vx: rand(8,12)*dpi, vy: dir*rand(4,6)*dpi, life: 160 };
+      }
+      function heartPoint(t, scale = Math.min(W,H)*0.22, cx = W/2, cy = H/2) {
+        // Classic parametric heart curve
+        const x = scale * 16 * Math.pow(Math.sin(t), 3);
+        const y = -scale * (13*Math.cos(t) - 5*Math.cos(2*t) - 2*Math.cos(3*t) - Math.cos(4*t));
+        return { x: cx + x, y: cy + y };
+      }
+      function initParticles(n=300) {
+        particles.length = 0;
+        for (let i=0;i<n;i++) particles.push({
+          x: rand(0,W), y: rand(0,H), vx: 0, vy: 0, tx: null, ty: null, life: 0
+        });
+      }
+      initParticles(420);
+      let gatherToHeart = false, gatherProgress = 0;
+      function draw() {
+        ctx2d.clearRect(0,0,W,H);
+        // Stars
+        stars.forEach(s => {
+          s.tw += 0.02;
+          const alpha = 0.6 + 0.4*Math.sin(s.tw);
+          ctx2d.fillStyle = `rgba(255,255,255,${alpha})`;
+          ctx2d.beginPath(); ctx2d.arc(s.x, s.y, s.r, 0, Math.PI*2); ctx2d.fill();
+        });
+        // Shooting star occasionally
+        shootTimer++;
+        if (!shooting && shootTimer > 600) { spawnShootingStar(); shootTimer = rand(0,200); }
+        if (shooting) {
+          shooting.life--;
+          ctx2d.strokeStyle = "rgba(255,255,255,0.8)";
+          ctx2d.lineWidth = 2*dpi;
+          ctx2d.beginPath(); ctx2d.moveTo(shooting.x, shooting.y);
+          ctx2d.lineTo(shooting.x - 40*dpi, shooting.y - 10*dpi); ctx2d.stroke();
+          shooting.x += shooting.vx; shooting.y += shooting.vy;
+          if (shooting.life <= 0 || shooting.x > W + 60*dpi) shooting = null;
+        }
+        // Particles (ambient drift or gather to heart)
+        if (gatherToHeart) gatherProgress = Math.min(1, gatherProgress + 0.005);
+        const targets = [];
+        if (gatherToHeart) {
+          for (let i=0; i<particles.length; i++) {
+            const t = (i / particles.length) * Math.PI * 2;
+            targets[i] = heartPoint(t);
+          }
+        }
+        particles.forEach((p, i) => {
+          if (gatherToHeart) {
+            const T = targets[i];
+            p.tx = T.x; p.ty = T.y;
+            p.vx += (p.tx - p.x) * 0.0025;
+            p.vy += (p.ty - p.y) * 0.0025;
+            p.vx *= 0.92; p.vy *= 0.92;
+          } else {
+            p.vx += rand(-0.05, 0.05); p.vy += rand(-0.05, 0.05);
+            p.vx *= 0.98; p.vy *= 0.98;
+          }
+          p.x += p.vx; p.y += p.vy;
+          // Wrap around edges
+          if (p.x < 0) p.x += W; if (p.x > W) p.x -= W; if (p.y < 0) p.y += H; if (p.y > H) p.y -= H;
+          ctx2d.fillStyle = "rgba(255,255,255,0.9)";
+          ctx2d.fillRect(p.x, p.y, 1.6*dpi, 1.6*dpi);
+        });
+        requestAnimationFrame(draw);
+      }
+      draw();
+
+      /* ==========================================================================
+         TYPE SEQUENCE orchestration for cinematic pacing across scenes
+         ========================================================================== */
+      const delay = (ms) => new Promise(res => setTimeout(res, ms));
+      async function scene1Sequence() {
+        const typeText = async (el, text, speed = 45) => {
+          el.classList.add("show");
+          el.textContent = "";
+          for (let i = 0; i < text.length; i++) {
+            el.textContent += text[i];
+            await delay(speed);
+          }
+        };
+        await delay(1000);
+        await typeText(document.getElementById("line1"), "In a universe full of endless stars…", 45);
+        await delay(500);
+        await typeText(document.getElementById("line2"), "My heart searched…", 55);
+        await delay(500);
+        await typeText(document.getElementById("line3"), "And then it found its home.", 45);
+        await delay(2000);
+        document.getElementById("name").classList.add("show");
+        await delay(1600);
+        document.getElementById("urdu1").classList.add("show");
+        await delay(1800);
+        document.getElementById("enter").classList.add("show");
+      }
+      scene1Sequence();
+
+      // On Enter: start audio, gather stars to heart, then transition
+      document.getElementById("enter").addEventListener("click", async () => {
+        AudioEngine.start();
+        gatherToHeart = true;
+        await delay(2800);
+        // Heart pulse "explosion" by briefly scaling targets outward
+        for (let k=0;k<140;k++){
+          particles.forEach((p,i)=>{ p.vx *= 1.02; p.vy *= 1.02; });
+        }
+        await delay(800);
+        // Transition to Scene 2
+        document.getElementById("scene1").classList.remove("active");
+        document.getElementById("scene2").classList.add("active");
+        flowScene2();
+      });
+
+      /* ==========================================================================
+         SCENE 2: Poetic confession reveal + secret lock feature
+         ========================================================================== */
+      async function flowScene2() {
+        const lines = Array.from(document.querySelectorAll("#scene2 .fade"));
+        for (const el of lines) { await delay(800); el.classList.add("show"); }
+      }
+      const secretOverlay = document.getElementById("secretOverlay");
+      document.getElementById("secretBtn").addEventListener("click", () => {
+        secretOverlay.classList.add("show");
+      });
+      document.getElementById("secretInput").addEventListener("input", async (e) => {
+        const val = e.target.value.trim().toLowerCase();
+        if (val === "safeena") {
+          // Unlock animation + heart burst
+          const lock = document.getElementById("lock");
+          lock.classList.add("open");
+          heartBurst(canvas.width/2, canvas.height/2);
+          await delay(800);
+          secretOverlay.classList.remove("show");
+          document.getElementById("scene2").classList.remove("active");
+          document.getElementById("scene3").classList.add("active");
+          // Reveal scene3 lines
+          const lines = Array.from(document.querySelectorAll("#scene3 .fade"));
+          for (const el of lines) { await delay(800); el.classList.add("show"); }
+        }
+      });
+
+      /* ==========================================================================
+         HEART BURST particles (used on unlock and final proposal clicks)
+         ========================================================================== */
+      function heartBurst(cx, cy) {
+        for (let i=0;i<140;i++){
+          const p = { x: cx, y: cy, vx: rand(-5,5), vy: rand(-5,5), life: 60 };
+          particles.push(p);
+        }
+        let t = 0;
+        const burst = () => {
+          t++;
+          ctx2d.globalCompositeOperation = "lighter";
+          particles.forEach(p=>{
+            p.x += p.vx; p.y += p.vy; p.life--;
+            ctx2d.fillStyle = `rgba(255, 80, 120, ${Math.max(0, p.life/60)})`;
+            ctx2d.fillRect(p.x, p.y, 2*dpi, 2*dpi);
+          });
+          ctx2d.globalCompositeOperation = "source-over";
+          if (t < 60) requestAnimationFrame(burst);
+        };
+        burst();
+      }
+
+      /* ==========================================================================
+         SCENE 3: After secret message, proceed to final proposal
+         ========================================================================== */
+      document.getElementById("finalBtn").addEventListener("click", async () => {
+        document.getElementById("scene3").classList.remove("active");
+        document.getElementById("scene4").classList.add("active");
+        AudioEngine.swell();
+        await delay(600);
+        document.getElementById("f1").classList.add("show");
+        await delay(1600);
+        document.getElementById("f2").classList.add("show");
+        await delay(1600);
+        document.getElementById("f3").classList.add("show");
+        await delay(2000);
+        document.getElementById("proposal").classList.add("show");
+        await delay(1200);
+        document.getElementById("proposalUrdu").classList.add("show");
+      });
+
+      /* ==========================================================================
+         FINAL: Buttons trigger fireworks, petals, floating hearts, final lines
+         ========================================================================== */
+      const petalsContainer = document.getElementById("petals");
+      const floatContainer = document.getElementById("floatHearts");
+      function spawnPetal() {
+        const el = document.createElement("div");
+        el.className = "petal";
+        el.style.left = Math.round(Math.random()*100) + "%";
+        el.style.top = "-10%";
+        el.style.animation = `fall ${Math.round(rand(6,12))}s linear forwards`;
+        petalsContainer.appendChild(el);
+        setTimeout(()=>el.remove(), 13000);
+      }
+      function spawnFloatHeart() {
+        const el = document.createElement("div");
+        el.className = "fheart";
+        el.style.left = Math.round(Math.random()*100) + "%";
+        el.style.bottom = Math.round(rand(5,25)) + "%";
+        el.style.animation = `float ${Math.round(rand(6,10))}s ease-in-out infinite`;
+        floatContainer.appendChild(el);
+      }
+      for (let i=0;i<18;i++) spawnFloatHeart();
+
+      function fireworksBurst() {
+        const cx = W/2, cy = H/2;
+        for (let i=0;i<18;i++){
+          setTimeout(()=>heartBurst(cx, cy), i*120);
+        }
+        let petals = 0;
+        const petalTimer = setInterval(()=>{ spawnPetal(); petals++; if (petals>120) clearInterval(petalTimer); }, 110);
+      }
+      function finalize() {
+        document.getElementById("finalMsg").classList.add("show");
+        setTimeout(()=>document.getElementById("finalUrdu").classList.add("show"), 1400);
+      }
+      document.getElementById("yes").addEventListener("click", () => {
+        fireworksBurst(); finalize();
+      });
+      document.getElementById("only").addEventListener("click", () => {
+        fireworksBurst(); finalize();
+      });
+    </script>
+  </body>
+</html>
